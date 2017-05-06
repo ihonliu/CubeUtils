@@ -1,2 +1,2 @@
 # CubeUtils
-SS-Cube service support program written in Delphi 6.
+SS-Cube service support program written in Delphi 10.2.
