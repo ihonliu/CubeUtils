@@ -26,8 +26,9 @@ object mainForm: TmainForm
   object NameLabel: TLabel
     Left = 8
     Top = 8
-    Width = 221
+    Width = 123
     Height = 19
+    Caption = 'CubeUtils goes here'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -13
