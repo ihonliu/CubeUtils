@@ -58,7 +58,6 @@ object mainForm: TmainForm
     EditLabel.Caption = 'Email'
     ImeMode = imDisable
     TabOrder = 0
-    OnEnter = FormCreate
   end
   object PasswordEdit: TLabeledEdit
     Left = 8
@@ -75,7 +74,6 @@ object mainForm: TmainForm
     PasswordChar = #9679
     ShowHint = True
     TabOrder = 1
-    OnEnter = FormCreate
   end
   object ExitBtn: TBitBtn
     Left = 168
@@ -91,5 +89,94 @@ object mainForm: TmainForm
     Top = 144
     FrameDelay = 30
     IndicatorSize = aisSmall
+  end
+  object GridPanel: TGridPanel
+    Left = 8
+    Top = 44
+    Width = 235
+    Height = 94
+    BevelOuter = bvNone
+    ColumnCollection = <
+      item
+        Value = 50.000000000000000000
+      end
+      item
+        Value = 50.000000000000000000
+      end>
+    ControlCollection = <
+      item
+        Column = 0
+        Control = SaveConf
+        Row = 0
+      end
+      item
+        Column = 1
+        Control = TestPing
+        Row = 0
+      end
+      item
+        Column = 0
+        Control = SaveLink
+        Row = 1
+      end
+      item
+        Column = 1
+        Control = ShowQR
+        Row = 1
+      end>
+    ParentBackground = False
+    RowCollection = <
+      item
+        Value = 50.000000000000000000
+      end
+      item
+        Value = 50.000000000000000000
+      end>
+    TabOrder = 5
+    Visible = False
+    object SaveConf: TBitBtn
+      AlignWithMargins = True
+      Left = 3
+      Top = 3
+      Width = 111
+      Height = 41
+      Align = alClient
+      Caption = #20445#23384'SS'#37197#32622
+      TabOrder = 0
+      OnClick = SaveConfClick
+    end
+    object TestPing: TBitBtn
+      AlignWithMargins = True
+      Left = 120
+      Top = 3
+      Width = 112
+      Height = 41
+      Align = alClient
+      Caption = #27979#35797#33410#28857#36830#36890#24615'('#19981#21487#29992')'
+      TabOrder = 1
+    end
+    object SaveLink: TBitBtn
+      AlignWithMargins = True
+      Left = 3
+      Top = 50
+      Width = 111
+      Height = 41
+      Align = alClient
+      Caption = #20445#23384#20026'SS-Link('#19981#21487#29992')'
+      TabOrder = 2
+      ExplicitLeft = 0
+      ExplicitWidth = 114
+    end
+    object ShowQR: TBitBtn
+      AlignWithMargins = True
+      Left = 120
+      Top = 50
+      Width = 112
+      Height = 41
+      Align = alClient
+      Caption = #26174#31034#20108#32500#30721'('#19981#21487#29992')'
+      TabOrder = 3
+      ExplicitWidth = 113
+    end
   end
 end

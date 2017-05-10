@@ -112,10 +112,6 @@
         <DCCReference Include="mainForm.pas">
             <Form>MainForm</Form>
         </DCCReference>
-        <DCCReference Include="DownloadConf\FrameDlProgress.pas">
-            <Form>FrameDlProcessing</Form>
-            <DesignClass>TFrame</DesignClass>
-        </DCCReference>
         <DCCReference Include="Thread\LoginThread.pas"/>
         <DCCReference Include="PingModule\pingMod.pas"/>
         <DCCReference Include="PingModule\iphlpapi.pas"/>

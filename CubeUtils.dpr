@@ -3,7 +3,7 @@ program CubeUtils;
 uses
   Forms,
   mainForm in 'mainForm.pas' {MainForm},
-  FrameDlProgress in 'DownloadConf\FrameDlProgress.pas' {FrameDlProcessing: TFrame},
+  //FrameDlProgress in 'DownloadConf\FrameDlProgress.pas' {FrameDlProcessing: TFrame},
   LoginThread in 'Thread\LoginThread.pas',
   pingMod in 'PingModule\pingMod.pas',
   iphlpapi in 'PingModule\iphlpapi.pas';
@@ -12,6 +12,6 @@ uses
 
 begin
   Application.Initialize;
-  Application.CreateForm(TMainForm_var, MainForm_var);
+  Application.CreateForm(TMainForm, MainForm_var);
   Application.Run;
 end.
