@@ -5,7 +5,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes,
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ComCtrls,
-  Vcl.ExtCtrls;
+  Vcl.ExtCtrls, IdHTTP;
 
 type
   TFrameDlProgress = class(TFrame)
@@ -20,6 +20,11 @@ type
     { Public declarations }
     procedure Release;
   end;
+function GetSSConf(
+  const email: string;
+  const password: string;
+  const formhash: string;
+  const SiteAddress:string): string;
 
 implementation
 
@@ -29,8 +34,8 @@ begin
   DlProgressBar.Min:=0;
   DlProgressBar.Max:=100;
   DlProgressBar.Position:=Progress;
-
 end;
+
 procedure TFrameDlProgress.CMRelease(var Message: TMessage);
 begin
   Free;
@@ -40,5 +45,7 @@ procedure TFrameDlProgress.Release;
 begin
   PostMessage(Handle, CM_RELEASE, 0, 0);
 end;
+
+
 
 end.

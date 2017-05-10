@@ -13,7 +13,7 @@ object mainForm: TmainForm
   Font.Style = []
   OldCreateOrder = False
   Position = poDesktopCenter
-  OnCreate = NameLabelOnCreate
+  OnCreate = OnCreate
   PixelsPerInch = 96
   TextHeight = 16
   object InfoLabel: TLabel
@@ -35,6 +35,8 @@ object mainForm: TmainForm
     Font.Name = #24494#36719#38597#40657
     Font.Style = []
     ParentFont = False
+    ParentShowHint = False
+    ShowHint = False
   end
   object LoginBtn: TBitBtn
     Left = 87
@@ -50,6 +52,7 @@ object mainForm: TmainForm
     Top = 64
     Width = 235
     Height = 24
+    HelpType = htKeyword
     EditLabel.Width = 28
     EditLabel.Height = 16
     EditLabel.Caption = 'Email'
@@ -62,12 +65,15 @@ object mainForm: TmainForm
     Top = 114
     Width = 235
     Height = 24
+    Hint = #22823#20110'6'#20301#65292#23567#20110'20'#20301
     EditLabel.Width = 22
     EditLabel.Height = 16
     EditLabel.Caption = #23494#30721
     ImeMode = imDisable
     MaxLength = 20
+    ParentShowHint = False
     PasswordChar = #9679
+    ShowHint = True
     TabOrder = 1
     OnEnter = FormCreate
   end
@@ -79,5 +85,11 @@ object mainForm: TmainForm
     Caption = #36864#20986
     TabOrder = 3
     OnClick = ExitBtnClick
+  end
+  object ActivityIndicator: TActivityIndicator
+    Left = 8
+    Top = 144
+    FrameDelay = 30
+    IndicatorSize = aisSmall
   end
 end
