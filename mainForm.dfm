@@ -58,6 +58,7 @@ object mainForm: TmainForm
     EditLabel.Caption = 'Email'
     ImeMode = imDisable
     TabOrder = 0
+    Text = 'ihonliu@gmail.com'
   end
   object PasswordEdit: TLabeledEdit
     Left = 8
@@ -74,6 +75,7 @@ object mainForm: TmainForm
     PasswordChar = #9679
     ShowHint = True
     TabOrder = 1
+    Text = '900416'
   end
   object ExitBtn: TBitBtn
     Left = 168
@@ -133,7 +135,6 @@ object mainForm: TmainForm
         Value = 50.000000000000000000
       end>
     TabOrder = 5
-    Visible = False
     object SaveConf: TBitBtn
       AlignWithMargins = True
       Left = 3
@@ -154,6 +155,7 @@ object mainForm: TmainForm
       Align = alClient
       Caption = #27979#35797#33410#28857#36830#36890#24615'('#19981#21487#29992')'
       TabOrder = 1
+      OnClick = TestPingClick
     end
     object SaveLink: TBitBtn
       AlignWithMargins = True
@@ -164,8 +166,7 @@ object mainForm: TmainForm
       Align = alClient
       Caption = #20445#23384#20026'SS-Link('#19981#21487#29992')'
       TabOrder = 2
-      ExplicitLeft = 0
-      ExplicitWidth = 114
+      OnClick = SaveLinkClick
     end
     object ShowQR: TBitBtn
       AlignWithMargins = True
@@ -176,7 +177,7 @@ object mainForm: TmainForm
       Align = alClient
       Caption = #26174#31034#20108#32500#30721'('#19981#21487#29992')'
       TabOrder = 3
-      ExplicitWidth = 113
+      OnClick = ShowQRClick
     end
   end
 end
