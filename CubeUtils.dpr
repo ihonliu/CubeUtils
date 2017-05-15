@@ -6,8 +6,9 @@ uses
   LoginThread in 'Thread\LoginThread.pas',
   pingMod in 'PingModule\pingMod.pas',
   iphlpapi in 'PingModule\iphlpapi.pas',
-  PingThread in 'Thread\PingThread.pas',
-  PingResult in 'PingResult.pas' {PingResult};
+  PingTask in 'Thread\PingTask.pas',
+  PingResult in 'PingResult.pas' {PingResult},
+  ThreadPool in 'Thread\ThreadPool.pas';
 
 {$R *.res}
 

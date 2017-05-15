@@ -8,30 +8,6 @@ interface
 
   type
     TDynamicSingleArray = array of Single;
-    (*
-      TPingThread = class(TThread)
-      private
-      FTarget: String;
-      FSucc: boolean;
-      FResult: TDynamicSingleArray; // in millisecond
-      Len: shortint; // Array length
-      function ResultMean: Single;
-      function ResultMax: Single;
-      function ResultMin: Single;
-      function GetThis: TObject; Inline;
-      protected
-      { protect }
-      procedure execute; override;
-      public
-      constructor Create(SSConfObject: TJsonObject; Length: shortint);
-      property Target: String read FTarget write FTarget;
-      property Succ: boolean read FSucc write FSucc;
-      property MeanDelay: Single read ResultMean;
-      property MaxDelay: Single read ResultMax;
-      property MinDelay: Single read ResultMin;
-      property This: TObject read GetThis;
-
-      end; *)
 
     TPingTask = class(TPoolTask)
       { Input related }
@@ -76,20 +52,6 @@ interface
 
 implementation
 
-  {
-    constructor TPingThread.Create(SSConfObject: TJsonObject; Length: shortint);
-    var
-    Domain: String;
-    begin
-    inherited Create(True);
-    Domain := SSConfObject.Get('server').JSONValue.ToString;
-    Domain := Copy(Domain, 2, System.Length(Domain) - 2);
-    FTarget := Domain;
-    Succ := False;
-    Len := Length;
-    SetLength(FResult, Len);
-    end;
-  }
   function TPingTask.ResultMean: Single;
   var
     i: Cardinal;
@@ -118,6 +80,7 @@ implementation
       if FResult[i] > Maximum then
         Maximum := FResult[i];
     end;
+    Result:=Maximum;
   end;
 
   function TPingTask.ResultMin: Single;
@@ -128,9 +91,10 @@ implementation
     Minimum := 100000; // Max value initialization
     for i := 1 to Len do
     begin
-      if FResult[i] < Minimum then
+      if (FResult[i] < Minimum) and (FResult[i]<>0) then
         Minimum := FResult[i];
     end;
+    Result:=Minimum;
   end;
 
   { **
@@ -176,6 +140,7 @@ implementation
     begin
       Task.FResult[cc] := pingMod.Ping(Task.TargetAddress);
       Inc(cc);
+      Sleep(1000);
     end;
 
     DoneTask(True);

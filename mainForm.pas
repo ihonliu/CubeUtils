@@ -166,7 +166,7 @@ implementation
 
   procedure TMainForm.TestPingClick(Sender: TObject);
   begin
-    with TPingResult.Create(nil) do
+    with TPingResult.Create(Application) do
       try
         ShowModal;
       finally

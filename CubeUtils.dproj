@@ -3,7 +3,7 @@
         <ProjectGuid>{3BEF29A4-5635-44EE-99C6-CE7A4A516F86}</ProjectGuid>
         <MainSource>CubeUtils.dpr</MainSource>
         <Base>True</Base>
-        <Config Condition="'$(Config)'==''">Release</Config>
+        <Config Condition="'$(Config)'==''">Debug</Config>
         <TargetedPlatforms>1</TargetedPlatforms>
         <AppType>Application</AppType>
         <FrameworkType>VCL</FrameworkType>
@@ -90,6 +90,7 @@
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=;ProgramID=com.embarcadero.$(MSBuildProjectName)</VerInfo_Keys>
+        <DCC_DebugInfoInExe>true</DCC_DebugInfoInExe>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2)'!=''">
         <DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
@@ -115,11 +116,12 @@
         <DCCReference Include="Thread\LoginThread.pas"/>
         <DCCReference Include="PingModule\pingMod.pas"/>
         <DCCReference Include="PingModule\iphlpapi.pas"/>
-        <DCCReference Include="Thread\PingThread.pas"/>
+        <DCCReference Include="Thread\PingTask.pas"/>
         <DCCReference Include="PingResult.pas">
             <Form>PingResult</Form>
             <FormType>dfm</FormType>
         </DCCReference>
+        <DCCReference Include="Thread\ThreadPool.pas"/>
         <None Include="ModelSupport_CubeUtils\default.txaPackage"/>
         <None Include="ModelSupport_CubeUtils\default.txvpck"/>
         <None Include="ModelSupport_CubeUtils\CubeUtils\default.txvpck"/>

@@ -1,141 +1,196 @@
-unit pingThread;
+unit PingTask;
 
 interface
 
   uses
-    System.Classes, Winapi.Windows, SysUtils, pingMod, Math, Json, Winsock;
+    System.Classes, Winapi.Windows, System.SysUtils, pingMod, Json,
+    Winsock, vcl.dialogs, ThreadPool;
 
   type
     TDynamicSingleArray = array of Single;
-
-    TPingThread = class(TThread)
-    private
-      FIP    : String;
-      FSucc  : boolean;
+    (*
+      TPingThread = class(TThread)
+      private
+      FTarget: String;
+      FSucc: boolean;
       FResult: TDynamicSingleArray; // in millisecond
-      Len    : shortint;            // Array length
-      // procedure DebugOutput;
-      // procedure SetResult(Delay: integer);
+      Len: shortint; // Array length
       function ResultMean: Single;
       function ResultMax: Single;
       function ResultMin: Single;
-    protected
-      procedure Execute; override;
-    public
-      { constructor Create(const IP: String; Length: shortint);
-        reintroduce; overload; }
-      { constructor Create(SSConfObject: TJsonObject; Length: shortint); }
-      { reintroduce; overload; }
-      property IP       : String read FIP write FIP;
-      property Succ     : boolean read FSucc write FSucc;
+      function GetThis: TObject; Inline;
+      protected
+      { protect }
+      procedure execute; override;
+      public
+      constructor Create(SSConfObject: TJsonObject; Length: shortint);
+      property Target: String read FTarget write FTarget;
+      property Succ: boolean read FSucc write FSucc;
       property MeanDelay: Single read ResultMean;
-      property MaxDelay : Single read ResultMax;
-      property MinDelay : Single read ResultMin;
+      property MaxDelay: Single read ResultMax;
+      property MinDelay: Single read ResultMin;
+      property This: TObject read GetThis;
+
+      end; *)
+
+    TPingTask = class(TPoolTask)
+      { Input related }
+      protected
+        FTarget: String;
+        FSucc: Boolean;
+        FLen: Cardinal; // Array length
+        { Output related }
+      protected
+        FResult: TDynamicSingleArray; // in millisecond
+
+        function ResultMean: Single;
+        function ResultMax: Single;
+        function ResultMin: Single;
+        { Overriden stuff }
+      protected
+        procedure Assign(Source: TPoolTask); override;
+        function IsTheSame(Compare: TPoolTask): Boolean; override;
+        { Public input }
+      public
+        property TargetAddress: string read FTarget write FTarget;
+        property SuccIndicator: Boolean read FSucc write FSucc;
+        property Len: Cardinal read FLen write FLen;
+        { Public output }
+      public
+        property MeanDelay: Single read ResultMean;
+        property MaxDelay: Single read ResultMax;
+        property MinDelay: Single read ResultMin;
     end;
 
+    TPingWorker = class(TPoolWorker)
+      protected
+        procedure ExecuteTask; override;
+    end;
+
+    TPingManager = class(TPoolManager)
+      protected
+        class function WorkerClass: TPoolWorkerClass; override;
+      public
+        class function Singleton: TPingManager; reintroduce;
+    end;
 
 implementation
 
-  procedure TranslateStringToTInAddr(AIP: string; var AInAddr);
-    var
-      phe      : PHostEnt;
-      pac      : PAnsiChar;
-      GInitData: TWSAData;
-    begin
-      WSAStartup($101, GInitData);
-      try
-        phe := GetHostByName(PAnsiChar(AnsiString(AIP)));
-        if Assigned(phe) then
-          begin
-            pac := phe^.h_addr_list^;
-            // showmessage('OK');
-            if Assigned(pac) then
-              begin
-                with TIPAddr(AInAddr).S_un_b do
-                  begin
-                    s_b1 := Byte(pac[0]);
-                    s_b2 := Byte(pac[1]);
-                    s_b3 := Byte(pac[2]);
-                    s_b4 := Byte(pac[3]);
-                  end;
-              end
-            else
-              begin
-                raise Exception.Create('Error getting IP from HostName');
-              end;
-          end
-        else
-          begin
-            raise Exception.Create('Error getting HostName');
-          end;
-      except
-        FillChar(AInAddr, SizeOf(AInAddr), #0);
-      end;
-      WSACleanup;
-    end;
-  { constructor TPingThread.Create(const IP: string; Length: shortint);
-    begin
-    inherited Create(True);
-    FIP  := IP;
-    Succ := False;
-    Len  := Length;
-    SetLength(FResult, Len);
-    end;
-  }
-    constructor TPingThread.Create(SSConfObject: TJsonObject; Length: shortint);
-    var IP:string;
-    begin
-    inherited Create(True);
-    TranslateStringToTInAddr(SSConfObject.Get('server').JSONValue.ToString,IP);
-    FIP  := IP;
-    Succ := False;
-    Len  := Length;
-    SetLength(FResult, Len);
-    end;
-
   {
-    procedure TPingThread.SetResult(Delay: integer);
+    constructor TPingThread.Create(SSConfObject: TJsonObject; Length: shortint);
+    var
+    Domain: String;
     begin
-    FResult := Delay;
+    inherited Create(True);
+    Domain := SSConfObject.Get('server').JSONValue.ToString;
+    Domain := Copy(Domain, 2, System.Length(Domain) - 2);
+    FTarget := Domain;
+    Succ := False;
+    Len := Length;
+    SetLength(FResult, Len);
     end;
   }
-
-  function TPingThread.ResultMean: Single;
+  function TPingTask.ResultMean: Single;
+  var
+    i: Cardinal;
+    CountNotZero: Cardinal;
+    Sum: Single;
+  begin
+    Sum := 0; // Sum initialization
+    CountNotZero := 0; // Counter initialization
+    for i := 1 to Len do
     begin
-      Result := Mean(FResult);
+      Sum := Sum + FResult[i];
+      if FResult[i] <> 0 then
+        Inc(CountNotZero);
+    end;
+    Result := Sum / CountNotZero;
+  end;
+
+  function TPingTask.ResultMax: Single;
+  var
+    i: Cardinal;
+    Maximum: Single;
+  begin
+    Maximum := 0; // Max value initialization
+    for i := 1 to Len do
+    begin
+      if FResult[i] > Maximum then
+        Maximum := FResult[i];
+    end;
+  end;
+
+  function TPingTask.ResultMin: Single;
+  var
+    i: Cardinal;
+    Minimum: Single;
+  begin
+    Minimum := 100000; // Max value initialization
+    for i := 1 to Len do
+    begin
+      if FResult[i] < Minimum then
+        Minimum := FResult[i];
+    end;
+  end;
+
+  { **
+    * Assign only data which is required for do the job (no calculated data)
+    * }
+  procedure TPingTask.Assign(Source: TPoolTask);
+  var
+    PT: TPingTask;
+  begin
+    inherited Assign(Source);
+    PT := TPingTask(Source);
+    TargetAddress := PT.TargetAddress;
+    SuccIndicator := PT.SuccIndicator;
+    Len := PT.Len;
+  end;
+
+  function TPingTask.IsTheSame(Compare: TPoolTask): Boolean;
+  var
+    PT: TPingTask;
+  begin
+    Result := Compare is TPingTask;
+    if not Result then
+      Exit;
+    PT := TPingTask(Compare);
+    Result := (PT.TargetAddress = TargetAddress) and (PT.Len = Len) and
+      (PT.SuccIndicator = SuccIndicator);
+  end;
+
+  { ** TPrimeWorker ** }
+
+  procedure TPingWorker.ExecuteTask;
+  var
+    cc: Cardinal;
+    { **
+      * Local representation of the property Task, because it's expensive to get it often.
+      * }
+    Task: TPingTask;
+  begin
+    Task := TPingTask(ContextTask);
+    cc := 1;
+    SetLength(Task.FResult, Task.Len);
+    while not Canceled and (cc < Task.Len) do
+    begin
+      Task.FResult[cc] := pingMod.Ping(Task.TargetAddress);
+      Inc(cc);
     end;
 
-  function TPingThread.ResultMax: Single;
-    begin
-      Result := MaxValue(FResult);
-    end;
+    DoneTask(True);
+  end;
 
-  function TPingThread.ResultMin: Single;
-    begin
-      Result := MinValue(FResult);
-    end;
+  { ** TPrimeManager ** }
 
-  (*
-    procedure TPingThread.DebugOutput;
-    begin
-    { Put some code here }
-    end;
-  *)
-  procedure TPingThread.Execute;
-    var
-      i: integer;
-    begin
-      FreeOnTerminate := True;
-      for i           := 1 to Len do
-        FResult[i]    := pingMod.Ping(IP);
-      Terminate;
-    end;
+  class function TPingManager.Singleton: TPingManager;
+  begin
+    Result := TPingManager(inherited Singleton);
+  end;
 
-initialization
-
-  DNS             := TIdDNSResolver.Create(nil);
-  DNS.WaitingTime := 10;
-  DNS.Host        := '119.29.29.29';
-  DNS.QueryType   := [qtA];
+  class function TPingManager.WorkerClass: TPoolWorkerClass;
+  begin
+    Result := TPingWorker;
+  end;
 
 end.
