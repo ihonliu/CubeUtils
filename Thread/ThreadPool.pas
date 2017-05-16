@@ -320,6 +320,7 @@ type
 		procedure Terminate; override;
 
 		property State:TWorkerState read FState write FState;
+
 	end;
 
 	{**

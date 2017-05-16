@@ -176,11 +176,11 @@ implementation
 
   procedure TMainForm.LoginBtnClick(Sender: TObject);
   // download configuration
-  var
-    TimeCountLogin: integer;
-    TimeLimitLogin: integer;
+  //var
+    //TimeCountLogin: integer;
+    //TimeLimitLogin: integer;
   begin
-    TimeLimitLogin := 40;
+   // TimeLimitLogin := 40;
     email := EmailEdit.text;
     password := PasswordEdit.text;
     if (email = '') and (password = '') then

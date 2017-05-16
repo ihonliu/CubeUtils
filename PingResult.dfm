@@ -2,8 +2,8 @@ object PingResult: TPingResult
   Left = 0
   Top = 0
   Caption = #36830#36890#24615#27979#35797
-  ClientHeight = 445
-  ClientWidth = 625
+  ClientHeight = 582
+  ClientWidth = 1115
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -12,20 +12,22 @@ object PingResult: TPingResult
   Font.Style = []
   OldCreateOrder = False
   Position = poDesktopCenter
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
   PixelsPerInch = 96
   TextHeight = 16
   object ComponentHolder: TPanel
     Left = 0
     Top = 0
     Width = 145
-    Height = 445
+    Height = 536
     Align = alLeft
     BevelOuter = bvNone
     TabOrder = 0
     object Label1: TLabel
       AlignWithMargins = True
       Left = 3
-      Top = 426
+      Top = 517
       Width = 139
       Height = 16
       Align = alBottom
@@ -127,74 +129,59 @@ object PingResult: TPingResult
         Width = 131
         Height = 37
         Align = alClient
-        Caption = #27809#20160#20040#21365#29992#30340#25353#38062
+        Caption = 'Terminate'
         TabOrder = 3
+        OnClick = BitBtn3Click
       end
     end
   end
-  object DBGrid1: TDBGrid
-    AlignWithMargins = True
-    Left = 148
-    Top = 3
-    Width = 474
-    Height = 439
+  object StringGrid1: TStringGrid
+    Left = 145
+    Top = 0
+    Width = 479
+    Height = 536
     Align = alClient
+    ColCount = 6
+    RowCount = 2
+    ParentColor = True
+    TabOrder = 2
+    ColWidths = (
+      64
+      215
+      47
+      47
+      46
+      45)
+    RowHeights = (
+      24
+      24)
+  end
+  object LogMemo: TMemo
+    Left = 0
+    Top = 536
+    Width = 1115
+    Height = 46
+    Align = alBottom
+    Lines.Strings = (
+      'Memo1')
     TabOrder = 1
+    Visible = False
+  end
+  object DBGrid1: TDBGrid
+    Left = 624
+    Top = 0
+    Width = 491
+    Height = 536
+    Align = alRight
+    TabOrder = 3
     TitleFont.Charset = DEFAULT_CHARSET
     TitleFont.Color = clWindowText
     TitleFont.Height = -11
     TitleFont.Name = #24494#36719#38597#40657
     TitleFont.Style = []
-    Columns = <
-      item
-        Expanded = False
-        FieldName = 'NumOrder'
-        Title.Caption = #24207#21495
-        Visible = True
-      end
-      item
-        Expanded = False
-        FieldName = 'NodeName'
-        Title.Caption = #33410#28857#21517#31216
-        Visible = True
-      end
-      item
-        Expanded = False
-        FieldName = 'TimeOutIndicator'
-        Title.Caption = #26159#21542#36229#26102
-        Visible = True
-      end
-      item
-        Expanded = False
-        FieldName = 'LowestDelay'
-        Title.Caption = #26368#20302#24310#36831
-        Visible = True
-      end
-      item
-        Expanded = False
-        FieldName = 'HighestDelay'
-        Title.Caption = #26368#39640#24310#36831
-        Visible = True
-      end
-      item
-        Expanded = False
-        FieldName = 'AverageDelay'
-        Title.Caption = #24179#22343#24310#36831
-        Visible = True
-      end
-      item
-        Expanded = False
-        Visible = True
-      end>
   end
-  object LogMemo: TMemo
-    Left = 145
-    Top = 0
-    Width = 480
-    Height = 445
-    Align = alClient
-    Lines.Strings = (
-      'Memo1')
-    TabOrder = 2
+  object SQLTable1: TSQLTable
+    Left = 472
+    Top = 336
   end
 end
