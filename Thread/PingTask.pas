@@ -16,11 +16,10 @@ interface
       FLen      : Cardinal; // Array length
       FOrder    : Cardinal;
       FSSConf   : TJSonObject;
-      FOwner    : TObject;
+      FResult   : TDynamicSingleArray; // in millisecond
+      // FOwner: TObject;
       { Output related }
     protected
-      FResult: TDynamicSingleArray; // in millisecond
-
       function ResultMean: Single;
       function ResultMax: Single;
       function ResultMin: Single;
@@ -46,6 +45,7 @@ interface
       property MinDelay : Single read ResultMin;
       property SuccRate : Single read GetSuccRate;
       property NodeName : String read GetNodeName;
+      property Result   : TDynamicSingleArray read FResult;
     end;
 
     TPingWorker = class(TPoolWorker)
@@ -82,7 +82,6 @@ implementation
         Result := Sum / CountNotZero
       else
         Result := 0;
-
     end;
 
   function TPingTask.ResultMax: Single;
@@ -120,13 +119,14 @@ implementation
     begin
       SuccCount    := 0; // Counter initialization
       CountNotZero := 0;
-      for i        := 1 to Len do
+      for i        := 0 to Len - 1 do
         begin
           if FResult[i] <> 0 then
             Inc(CountNotZero);
         end;
       SuccCount := CountNotZero;
       Result    := CountNotZero / Len;
+     // showmessage(inttostr(CountNotZero) + ' ' + inttostr(Len));
     end;
 
   function TPingTask.GetAddress: String;
@@ -180,13 +180,13 @@ implementation
       Task: TPingTask;
     begin
       Task := TPingTask(ContextTask);
-      cc   := 1;
+      cc   := 0;
       SetLength(Task.FResult, Task.Len);
       while not Canceled and (cc < Task.Len) do
         begin
+          Sleep(1000);
           Task.FResult[cc] := pingMod.Ping(Task.TargetAddress);
           Inc(cc);
-          Sleep(1000);
         end;
 
       DoneTask(True);

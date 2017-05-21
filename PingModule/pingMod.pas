@@ -40,7 +40,7 @@ interface
     RequestData: Pointer; RequestSize: Smallint; RequestOptions: Pointer;
     ReplyBuffer: Pointer; ReplySize: DWORD; Timeout: DWORD): DWORD; stdcall;
     external 'iphlpapi.dll';
-  function Ping(InetAddress: String): ShortInt;
+  function Ping(InetAddress: String): Cardinal;
   procedure TranslateStringToTInAddr(AIP: string; var AInAddr);
 
 implementation
@@ -50,94 +50,90 @@ implementation
 
   function Fetch(var AInput: string; const ADelim: string = ' ';
     const ADelete: boolean = true): string;
-  var
-    iPos: integer;
-  begin
-    if ADelim = #0 then
+    var
+      iPos: integer;
     begin
-      // AnsiPos does not work with #0
-      iPos := Pos(ADelim, AInput);
-    end
-    else
-    begin
-      iPos := Pos(ADelim, AInput);
+      if ADelim = #0 then
+        begin
+          // AnsiPos does not work with #0
+          iPos := Pos(ADelim, AInput);
+        end
+      else
+        begin
+          iPos := Pos(ADelim, AInput);
+        end;
+      if iPos = 0 then
+        begin
+          Result := AInput;
+          if ADelete then
+            begin
+              AInput := '';
+            end;
+        end
+      else
+        begin
+          Result := Copy(AInput, 1, iPos - 1);
+          if ADelete then
+            begin
+              Delete(AInput, 1, iPos + Length(ADelim) - 1);
+            end;
+        end;
     end;
-    if iPos = 0 then
-    begin
-      Result := AInput;
-      if ADelete then
-      begin
-        AInput := '';
-      end;
-    end
-    else
-    begin
-      Result := Copy(AInput, 1, iPos - 1);
-      if ADelete then
-      begin
-        Delete(AInput, 1, iPos + Length(ADelim) - 1);
-      end;
-    end;
-  end;
 
   procedure TranslateStringToTInAddr(AIP: string; var AInAddr);
-  var
-    phe: PHostEnt;
-    pac: PAnsiChar;
-    GInitData: TWSAData;
-  begin
-    WSAStartup($101, GInitData);
-    try
-      phe := GetHostByName(PAnsiChar(AnsiString(AIP)));
-      if Assigned(phe) then
-      begin
-        pac := phe^.h_addr_list^;
-        // showmessage('OK');
-        if Assigned(pac) then
-        begin
-          with TIPAddr(AInAddr).S_un_b do
+    var
+      phe      : PHostEnt;
+      pac      : PAnsiChar;
+      GInitData: TWSAData;
+    begin
+      WSAStartup($101, GInitData);
+      try
+        phe := GetHostByName(PAnsiChar(AnsiString(AIP)));
+        if Assigned(phe) then
           begin
-            s_b1 := byte(pac[0]);
-            s_b2 := byte(pac[1]);
-            s_b3 := byte(pac[2]);
-            s_b4 := byte(pac[3]);
-          end;
-        end
+            pac := phe^.h_addr_list^;
+            if Assigned(pac) then
+              begin
+                with TIPAddr(AInAddr).S_un_b do
+                  begin
+                    s_b1 := byte(pac[0]);
+                    s_b2 := byte(pac[1]);
+                    s_b3 := byte(pac[2]);
+                    s_b4 := byte(pac[3]);
+                  end;
+              end
+            else
+              begin
+                raise Exception.Create('Error getting IP from HostName');
+              end;
+          end
         else
-        begin
-          raise Exception.Create('Error getting IP from HostName');
-        end;
-      end
-      else
-      begin
-        raise Exception.Create('Error getting HostName');
+          begin
+            raise Exception.Create('Error getting HostName');
+          end;
+      except
+        FillChar(AInAddr, SizeOf(AInAddr), #0);
       end;
-    except
-      FillChar(AInAddr, SizeOf(AInAddr), #0);
+      WSACleanup;
     end;
-    WSACleanup;
-  end;
 
-  function Ping(InetAddress: String): ShortInt;
-  var
-    Handle: THandle;
-    InAddr: IPAddr;
-    //SoAddr: IPAddr;
-    PingReply: TsmICMP_Echo_Reply;
-    DW: DWORD;
-  begin
-    Handle := IcmpCreateFile;
-    Result := 0;
-    if Handle = INVALID_HANDLE_VALUE then
-      Exit;
-    TranslateStringToTInAddr(InetAddress, InAddr);
-    // TranslateStringToTInAddr('127.0.0.1', SoAddr);
-    { Succ := IcmpSendEcho(Handle, InAddr, nil, 0, nil, @PingReply,
-      SizeOf(PingReply), 500) <> 0; }
-    DW := IcmpSendEcho(Handle, InAddr, nil, 0, nil, @PingReply,
-      SizeOf(PingReply), 500);
-    Result := PingReply.RoundTripTime;
-    IcmpCloseHandle(Handle);
-  end;
+  function Ping(InetAddress: String): Cardinal;
+    var
+      Handle: THandle;
+      InAddr: IPAddr;
+      // SoAddr: IPAddr;
+      PingReply: TsmICMP_Echo_Reply;
+      //DW       : DWORD;
+    begin
+      Handle := IcmpCreateFile;
+      Result := 0;
+      if Handle = INVALID_HANDLE_VALUE then
+        Exit;
+      TranslateStringToTInAddr(InetAddress, InAddr);
+      IcmpSendEcho(Handle, InAddr, nil, 0, nil, @PingReply,
+        SizeOf(PingReply), 500);
+      Result := PingReply.RoundTripTime;
+      IcmpCloseHandle(Handle);
+    end;
 
 end.

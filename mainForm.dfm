@@ -58,7 +58,6 @@ object mainForm: TmainForm
     EditLabel.Caption = 'Email'
     ImeMode = imDisable
     TabOrder = 0
-    Text = 'ihonliu@gmail.com'
   end
   object PasswordEdit: TLabeledEdit
     Left = 8
@@ -75,7 +74,6 @@ object mainForm: TmainForm
     PasswordChar = #9679
     ShowHint = True
     TabOrder = 1
-    Text = '900416'
   end
   object ExitBtn: TBitBtn
     Left = 168
@@ -135,6 +133,7 @@ object mainForm: TmainForm
         Value = 50.000000000000000000
       end>
     TabOrder = 5
+    Visible = False
     object SaveConf: TBitBtn
       AlignWithMargins = True
       Left = 3
